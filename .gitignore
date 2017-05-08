@@ -87,3 +87,11 @@ ENV/
 
 # Rope project settings
 .ropeproject
+# Ignore Latex logs etc.
+*.gz
+*.aux
+*.toc
+*.blg
+*.log
+*.bbl
+
