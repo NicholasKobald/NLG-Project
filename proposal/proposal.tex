@@ -9,7 +9,7 @@
 \usepackage{url}
 
 %uncomment line below for author names to appear. 
-%\aclfinalcopy % Uncomment this line for the final submission
+\aclfinalcopy % Uncomment this line for the final submission
 %\def\aclpaperid{***} %  Enter the acl Paper ID here
 
 \setlength\titlebox{5cm}
@@ -121,7 +121,7 @@ The Fake News Challenge competition provides an example baseline for stance clas
 	\item \textbf{Char-gram overlap}: How often character sequences (char grams) from the headline appear in the introductory paragraph of the body and the entire body text. The baseline implementation tests char grams in powers of two from 2-16.	
 \end{itemize} 
 
-However, the implementation should be compatible with most other general classifiers such as Support Vector Machines. 
+However, the implementation should be compatible with most other general classifiers such as Support Vector Machines.  \\
 
 Two methods are employed for splitting the data. A hold-out set defaulting to 20 percent of the dataset is first extracted for use in scoring and evaluation. Ten-fold cross validation is subsequently used for the training process. Both of these methods enable the scoring process, which calculates the accuracy of the classifier on the development dataset. The default classifier and feature set score 79.53\% using this metric \cite{fncbaselinegithub}.
 
