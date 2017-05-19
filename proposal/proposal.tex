@@ -83,11 +83,60 @@ The conclusion drawn was that both methods are very accurate in classifying news
 
 \subsection{Data Available}
 
+The fake news dataset is sourced from the Emergent Dataset described by Ferreira and Vlachos \cite{ferreira2016emergent}. This development dataset is formatted as triples of headline text, body text and labels. The headlines and bodies are primarily plain text, but some contain emoji or other UTF-8 symbols. The labels map to the four classes defined in the fake news challenge, where each class maps to one of the following stances \cite{fakenewschallenge}:
+
+\begin{enumerate}
+\item \textbf{Agrees:} The body text “agrees” (expresses the same viewpoint) with the claim in the headline.
+\item \textbf{Disagrees:} The body text does not “agree” with the headline.
+\item \textbf{Discusses:} The body text and the headline pertain to the same topic, but the body text neither agrees nor disagrees with the headline.
+\item \textbf{Unrelated:} The body text and the headline cover different claims or topics.
+\end{enumerate}
+
+There are approximately 50,000 articles in the development dataset. The distribution of articles by class (stance) is as follows \cite{fnc1github}: \\
+
+\begin{tabular}{|c | c | c | c|}
+\hline
+unrelated & discuss & agree & disagree \\ \hline
+0.73131 & 0.17828 &	0.0736012 &	0.0168094 \\ \hline
+\end{tabular} \\
+
+When creating testing data from the entire data set, the labels are removed to leave pairs of headlines and body text.
+
+
 \subsection{Baseline Implementation}
+The Fake News Challenge competition provides an example baseline for stance classification. The default baseline classifier utilizes gradient boosting with 200 estimators and a hand-picked set of features \cite{fakenewschallenge}:
+
+\begin{itemize}
+	\item \textbf{Word overlap}: The proportion of unique words shared between the headline and body, calculated using the formula $\frac{\left\vert{types_{headline} \cap types_{body}}\right\vert}
+							{\left\vert{types_{headline} \cup types_{body}}\right\vert}$
+	
+	\item \textbf{Refuting}: If the headline contains a keyword from a set of refuting words (e.g. “fake”, “fraud”, “hoax”) 
+	
+	\item \textbf{Polarity}: If there is a negative sentiment expressed in the headline and/or body. This feature also uses the set of refuting words.
+	
+	\item \textbf{Binary Co-occurrence}: How often tokens in the headline appear in the body.
+	
+	\item \textbf{N-gram overlap}: How often n-grams from the headline appear in the introductory paragraph of the body and the entire body text. The baseline implementation tests n-grams of size 2-6.
+	
+	\item \textbf{Char-gram overlap}: How often character sequences (char grams) from the headline appear in the introductory paragraph of the body and the entire body text. The baseline implementation tests char grams in powers of two from 2-16.	
+\end{itemize} 
+
+However, the implementation should be compatible with most other general classifiers such as Support Vector Machines. 
+
+Two methods are employed for splitting the data. A hold-out set defaulting to 20 percent of the dataset is first extracted for use in scoring and evaluation. Ten-fold cross validation is subsequently used for the training process. Both of these methods enable the scoring process, which calculates the accuracy of the classifier on the development dataset. The default classifier and feature set score 79.53\% using this metric \cite{fncbaselinegithub}.
+
 
 \subsection{Potential Improvements} 
 
+For our work on the fake news challenge problem, we have created a 3-stage plan for investigating and improving on the existing baseline:
 
+\begin{enumerate}
+	\item Explore different classifiers with the given feature set or tune the existing classifier. Given the relative simplicity of the baseline, tuning the default gradient boosting classifier or substituting a similar classifier may allow for swift feedback without revising the existing set of features.
+	\item Investigate alternative features and encodings (such as those used by Augenstein et. al). 
+	\item Explore alternative general methods such as long-short term memory networks \cite{augenstein2016stance}. 
+\end{enumerate}
+
+We also plan on extending the existing scoring system to display metrics such as precision and recall for the classifiers used. We hope this will allow for a finer understanding and more specific method of ranking performance among the various implementations to be tested.
 
 
 
