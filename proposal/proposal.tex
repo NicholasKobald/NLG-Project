@@ -59,7 +59,7 @@ For considering the headline and the claim together, their approach involved con
 
 Using the headline and headline-claim methods, two overlap thresholds were defined, minimum for and maximum against. If the overlap is higher than the minimum for threshold it is labelled for, if it is less than the maximum against it is labelled against. If it hits neither threshold it is labelled observing. An accuracy of 73\% was achieved on the Emergent test data set using this method. This method was challenged though in detecting observing stances, due to the similarities between the headlines and the claims when a headline is observing. This lead to a mislabelling of the observing claims as for claims. \\
 
-Other work done on stance detection includes “Stance Detection with Bidirectional Conditional Encoding” \cite{augenstein2016stance}. This paper looked at the stances of tweets, given sparse training data or where the target is not explicitly mentioned in the text. Two baselines were used, in a manner of treating stance detection as sentence level sentiment analysis. One was implemented using a Support Vector Machine Classifier and the other with long-short term memory networks (LSTM). LSTM networks were first proposed by Hochreiter and Schmidhuber and it is a gradient based method of learning to store information over extended time intervals /cite{hochreiter1997long}. Their paper found LSTM networks to work best and were used for most of the encodings. \\
+Other work done on stance detection includes “Stance Detection with Bidirectional Conditional Encoding” \cite{augenstein2016stance}. This paper looked at the stances of tweets, given sparse training data or where the target is not explicitly mentioned in the text. Two baselines were used, in a manner of treating stance detection as sentence level sentiment analysis. One was implemented using a Support Vector Machine Classifier and the other with long-short term memory networks (LSTM). LSTM networks were first proposed by Hochreiter and Schmidhuber and it is a gradient based method of learning to store information over extended time intervals \cite{hochreiter1997long}. Their paper found LSTM networks to work best and were used for most of the encodings. \\
 
 Initially, the text and targets were independently encoded as a k-dimensional dense vector space, using two different LSTM networks. The model learned target-independent representation for the tweets, with the initial training encoding the tweets independant of any target. It relied on the nonlinear projection layer to incorporate the target in the stance prediction \cite{augenstein2016stance}. \\
 
@@ -68,10 +68,10 @@ The paper also tested a conditional encoding method. First the target was encode
 To deal with the small amount of training data, unsupervised pretraining was used, by initialized word embeddings used in the LSTM with a trained word vector model. These embeddings were only used for initialization and were optimized with further training. The paper found that conditional encoding was well suited for learning how to fit a targets with generalized encodings and that bidirectional encoding performed best overall, especially where the target was not explicitly mentioned in the tweet. \\
 \section{Deception Detection} 
 
-Research by Conroy et. al. deals with the concept of automatic fake news detection using natural language processing. This is described as categorizing news on a spectrum based on their level of certainty as well as their veracity (the intention to mislead). The automatic detection of fake news is centered around predicting the chances that any news item is intentionally misleading and deceptive based on the content of the news item. According to the research, the two main approaches currently being used are linguistic methods and network methods. Both of these methods make use of machine learning on their training data set \cite{conroy2015automatic}. \\
+Conroy et. al. discusses several approaches for automatic fake news detection using natural language processing. This is described as categorizing news on a spectrum based on their level of certainty as well as their veracity (the intention to mislead). The automatic detection of fake news is centered around predicting the chances that any news item is intentionally misleading based on the content of the news item. According to the research, the two main approaches currently being used are linguistic methods and network methods. Both of these methods make use of machine learning on their training data set \cite{conroy2015automatic}. \\
 
 \subsection{Linguistic methods}
-These methods utilize knowledge of speech patterns that are able to identify truthfulness and deception more accurately than most humans. Under this approach, a basic way that text is analyzed is considering all words in a block of text as equally significant units. Using natural language processing, this technique would be implemented using \textit{n-grams} to analyze word frequencies and find indicators of deception. This method might also involve tagging the lexical cues of words (also called shallow syntax) or frequencies of words which can uncover linguistic patterns of deception. The techniques under this approach rely heavily on the analysis of the usage of language. They also work very well when combined with other approaches \cite{conroy2015automatic}. \\
+These methods utilize knowledge of speech patterns that are able to identify truthfulness and deception more accurately than most humans. Under this approach, a basic way that text is analyzed is considering all words in a block of text as equally significant units. Using natural language processing, this technique would be implemented using \textit{n-grams} to analyze word frequencies and find indicators of deception. This method might also involve tagging the lexical cues of words (also called shallow syntax) or frequencies of words which can uncover linguistic patterns of deception. The techniques under this approach rely heavily on the analysis of the usage of language. They also work very well when combined with other approaches \cite{conroy2015automatic}. 
 
 \subsection{Network methods}
 These methods make use of a network of associated information (like metadata) to predict the level of veracity of the content. It is also pointed out that the use of networks of data can provide a means to check the validity of a news item due to the presence of findable truths in the network. This involves making queries on existing knowledge to measure the truthfulness of new news items \cite{conroy2015automatic}. \\
@@ -79,8 +79,14 @@ These methods make use of a network of associated information (like metadata) to
 The conclusion drawn was that both methods are very accurate in classifying news items. This gives rise to the use of a hybrid methods that takes into account both approaches to automating fake news detection. Such hybrid methods would have a linguistics-based analysis process that takes into account lexical analysis. It would also be able to perform efficiently in place of a strictly linguistic or network based approach. These techniques should be created with the intent of complementing the processes performed by a researcher in detecting fake news, as opposed to replacing them \cite{conroy2015automatic}. \\
 
 
-
 \section{Proposed Approach}
+
+\subsection{Data Available}
+
+\subsection{Baseline Implementation}
+
+\subsection{Potential Improvements} 
+
 
 
 
