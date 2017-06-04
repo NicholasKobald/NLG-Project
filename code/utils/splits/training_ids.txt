@@ -1,0 +1,9 @@
+@Author: Nicholas Kobald
+@Date:   04-Jun-2017
+@Email:  nick.kobald@gmail.com
+@Filename: training_ids.txt
+@Last modified by:   Nicholas Kobald
+@Last modified time: 04-Jun-2017
+
+
+

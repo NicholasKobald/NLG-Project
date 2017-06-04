@@ -3,7 +3,7 @@ from csv import DictReader
 
 class DataSet():
 
-    def __init__(self, path="fnc-1"):
+    def __init__(self, path="../data_sets"):
         self.path = path
 
         print("Reading dataset")
@@ -31,5 +31,5 @@ class DataSet():
             r = DictReader(table)
             for line in r:
                 rows.append(line)
-                
+
         return rows

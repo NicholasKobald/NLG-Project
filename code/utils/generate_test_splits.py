@@ -10,18 +10,15 @@ def generate_hold_out_split (dataset, training = 0.8, base_dir="splits"):
     article_ids = list(dataset.articles.keys())  # get a list of article ids
     r.shuffle(article_ids)  # and shuffle that list
 
-
     training_ids = article_ids[:int(training * len(article_ids))]
     hold_out_ids = article_ids[int(training * len(article_ids)):]
 
     # write the split body ids out to files for future use
-    with open(base_dir+ "/"+ "training_ids.txt", "w+") as f:
+    with open(base_dir + "/" + "training_ids.txt", "w+") as f:
         f.write("\n".join([str(id) for id in training_ids]))
 
     with open(base_dir+ "/"+ "hold_out_ids.txt", "w+") as f:
         f.write("\n".join([str(id) for id in hold_out_ids]))
-
-
 
 def read_ids(file,base):
     ids = []
