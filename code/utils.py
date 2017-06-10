@@ -9,7 +9,7 @@ from csv import DictReader
 
 
 class DataSet():
-    
+
     def __init__(self, path="../data_sets"):
         self.path = path
 
@@ -19,11 +19,11 @@ class DataSet():
 
         self.stances = self.read(stances)
         articles = self.read(bodies)
-        self.articles = dict()
 
         for s in self.stances:
             s['Body ID'] = int(s['Body ID'])
 
+        self.articles = dict()
         for article in articles:
             self.articles[int(article['Body ID'])] = article['articleBody']
 
