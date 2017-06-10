@@ -2,9 +2,15 @@ import sys
 
 from utils import DataSet
 
+def check_stances(d):
+    print "Test 3. Check Stances"
+    valid_stances = ['agree', 'disagree', 'unrelated', 'discuss']
+    for stance in d.stances:
+        assert(stance['Stance'] in valid_stances)
+    print "Test 3: PASS."
 
 def assert_article_ids_exist(d):
-    print "Test 2."
+    print "Test 2. Check Consistency"
     for stance in d.stances:
         assert(stance['Body ID'] in d.articles)
     print "Test 2: PASS. Stance IDs are consistent with articles"
@@ -20,6 +26,7 @@ def read_dataset():
 def main():
     d = read_dataset()
     assert_article_ids_exist(d)
+    check_stances(d)
 
 if __name__== "__main__":
     main()
