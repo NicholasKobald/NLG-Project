@@ -29,7 +29,7 @@ class DataSet():
 
     def read(self, filename):
         rows = []
-        with open(self.path + "/" + filename, "r") as table:
+        with open(self.path + "/" + filename, "r",  encoding='utf-8') as table:
             r = DictReader(table)
             for line in r:
                 rows.append(line)
@@ -37,14 +37,14 @@ class DataSet():
         return rows
 
     def print_stances(self, print_limit=10):
-        print "First", print_limit, "stances"
+        print("First", print_limit, "stances")
         for i in range(print_limit):
-            print self.stances[i]
+            print(self.stances[i])
 
     def print_articles(self, print_limit=10):
-        print "First", print_limit, "articles"
+        print("First", print_limit, "articles")
         for i in range(print_limit):
-            print self.articles[self.stances[i]['Body ID']]
+            print(self.articles[self.stances[i]['Body ID']])
 
     def get_stance_counts(self):
         counts = dict(unrelated=0, discuss=0,

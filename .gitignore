@@ -6,6 +6,9 @@ __pycache__/
 # C extensions
 *.so
 
+# ignore google bin file..
+*.bin
+
 # Distribution / packaging
 .Python
 env/
@@ -94,4 +97,3 @@ ENV/
 *.blg
 *.log
 *.bbl
-
