@@ -1,9 +1,0 @@
-@Author: Nicholas Kobald
-@Date:   09-Jun-2017
-@Email:  nick.kobald@gmail.com
-@Filename: dummy.txt
-@Last modified by:   Nicholas Kobald
-@Last modified time: 09-Jun-2017
-
-
-

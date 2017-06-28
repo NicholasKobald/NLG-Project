@@ -3,3 +3,8 @@ scikit-learn
 numpy
 scipy
 nltk
+gensim
+keras
+theano
+tensorflow 
+
