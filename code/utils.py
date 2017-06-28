@@ -1,19 +1,20 @@
 #The code based on baseline provided by the FNC organization,
 #under the the Apache License
 #https://github.com/FakeNewsChallenge/fnc-1-baseline
-#and modified to run on Python2.7
-#
-# N. Kobald 2017-06-09
 
 from csv import DictReader
 
 
 class DataSet():
 
-    def __init__(self, path="../data_sets"):
-        self.path = path
+    def __init__(self,
+                 bodies_fname="train_bodies.csv",
+                 stance_fname="train_stances.csv",
+                 path="../data_sets"
+                ):
 
-        print("Reading dataset")
+        self.path = path
+        #print("Reading dataset")
         bodies = "train_bodies.csv"
         stances = "train_stances.csv"
 
@@ -54,3 +55,10 @@ class DataSet():
             counts[s['Stance']] += 1
 
         return counts
+
+#TODO:
+# remove stop words from articles
+#  -other strategies for reducing the size of the articles without losing their
+#   meaning?
+class ArticleParser:
+    pass

@@ -11,7 +11,6 @@ from nltk.tokenize import sent_tokenize
 from nltk.tokenize import WordPunctTokenizer
 
 
-
 def count_tokens_in_articles(training_set):
     key_to_info = dict()
     tokenizer = WordPunctTokenizer()
