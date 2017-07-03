@@ -4,6 +4,8 @@
 
 from csv import DictReader
 
+from nltk.corpus import stopwords
+STOP_WORDS = set(stopwords.words('english'))
 
 class DataSet():
 
@@ -14,7 +16,7 @@ class DataSet():
                 ):
 
         self.path = path
-        #print("Reading dataset")
+
         bodies = "train_bodies.csv"
         stances = "train_stances.csv"
 
@@ -28,6 +30,8 @@ class DataSet():
         for article in articles:
             self.articles[int(article['Body ID'])] = article['articleBody']
 
+        self.create_article_headline_stance_triples()
+
     def read(self, filename):
         rows = []
         with open(self.path + "/" + filename, "r",  encoding='utf-8') as table:
@@ -36,6 +40,10 @@ class DataSet():
                 rows.append(line)
 
         return rows
+
+    #@return string
+    def parse_article(self, article):
+        return ' '.join([x.lower() for x in article.split() if x not in STOP_WORDS])
 
     def print_stances(self, print_limit=10):
         print("First", print_limit, "stances")
@@ -56,9 +64,23 @@ class DataSet():
 
         return counts
 
-#TODO:
-# remove stop words from articles
-#  -other strategies for reducing the size of the articles without losing their
-#   meaning?
-class ArticleParser:
-    pass
+    def create_article_headline_stance_triples(self):
+        self.triples = dict(
+            stances=[],
+            articles=[],
+            headlines=[]
+        )
+
+        for s in self.stances:
+            self.triples['stances'].append(s['Stance'])
+            self.triples['articles'].append(self.articles[s['Body ID']])
+            self.triples['headlines'].append(s['Headline'])
+
+
+#overkill?
+#could encapsulate article, headline pairs and
+#store things like overlapp between them nicely
+#with an object like this
+class Article():
+    def __init__(self, article, headline):
+        pass

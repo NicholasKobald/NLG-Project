@@ -2,7 +2,7 @@
 #
 # WIP
 # this might not need it's own file.
-#will need to download the google word2vec 
+#will need to download the google word2vec
 
 import warnings
 #FIXME hopefully something I can do about this, because it's a bit ugly
@@ -14,7 +14,7 @@ import gensim
 class Vectors(object):
 
     def __init__(self):
-        model = gensim.models.KeyedVectors.load_word2vec_format('../data_sets/GoogleNews-vectors-negative300.bin', binary=True)
+        google_vec = gensim.models.KeyedVectors.load_word2vec_format('../data_sets/GoogleNews-vectors-negative300.bin', binary=True)
 
 
 def test_vectors():
