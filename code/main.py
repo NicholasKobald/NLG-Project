@@ -39,17 +39,34 @@ def main():
     articles = np.asarray(train_set.triples['articles'])
     headlines = np.asarray(train_set.triples['headlines'])
 
-    tk.fit_on_texts(list(train_set.articles.values()))
-    trained_seq = tk.texts_to_sequences(list(train_set.articles.values()))
+    tk.fit_on_texts(articles)
+    trained_seq = tk.texts_to_sequences(articles)
     trained_seq = sequence.pad_sequences(trained_seq, max_len)
 
+    print("Trained seq:", trained_seq[:5])
+    #print("Trained seq:", trained_seq[])
+    print("Seq has shape:", trained_seq.shape)
     model = Sequential()
     print("Create Sequential model")
-    model.add(Embedding(max_features, 128, input_length=max_len, dropout=0.2))
-    #model.add(LSTM(128))
-    model.add(Dense(1, input_dim=input_dim))
-    model.add(Activation('sigmoid'))
+    #model.add(Embedding(max_features, 100, input_length=max_len))
+    #del.add(LSTM(100))
+    # NOTE
+    # Trained seq is an embedding vector of the words. it has the shape
+    # (49972, 100) since we padded the sequences to the max length.
+    #
+    # Attempting to add one layer the neural net shouldn't be too bad.
+    # each of the 49972 entries, however I get errors when I try to set
+    # the input shape to he first layer as (None, 100) (none should be any pos integer)
+    #
+    # https://keras.io/layers/core/
+    #
+    #probably worth looking at:
+    # https://keras.io/getting-started/sequential-model-guide/
+    #
+    #
 
+    model.add(Dense(1, input_shape=(None, None, None)))
+    #model.add(Activation('sigmoid'))
     model.compile(loss='binary_crossentropy', optimizer='rmsprop')
     model.fit(trained_seq, stances,
         batch_size=32, epochs=10,
