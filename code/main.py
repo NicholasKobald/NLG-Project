@@ -65,7 +65,7 @@ def main():
     #
     #
 
-    model.add(Dense(1, input_shape=(None, None, None)))
+    model.add(Dense(1, input_shape=(None, 100)))
     #model.add(Activation('sigmoid'))
     model.compile(loss='binary_crossentropy', optimizer='rmsprop')
     model.fit(trained_seq, stances,
