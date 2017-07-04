@@ -54,8 +54,10 @@ def main():
     # Trained seq is an embedding vector of the words. it has the shape
     # (49972, 100) since we padded the sequences to the max length.
     #
-    # Attempting to add one layer the neural net shouldn't be too bad.
-    # each of the 49972 entries, however I get errors when I try to set
+    # Attempting to add one layer to the neural net shouldn't be too bad.
+    # The input is a numpy array of length 49972 (one for each article)
+    # where each entry is an array of length 100.
+    # however I get errors when I try to set
     # the input shape to he first layer as (None, 100) (none should be any pos integer)
     #
     # https://keras.io/layers/core/
