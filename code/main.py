@@ -1,9 +1,14 @@
 import numpy as np
+import pandas as pd
+
+from functools import reduce
 
 from keras.preprocessing.text import Tokenizer
 from keras.layers import Input, LSTM, Dense, Activation
 from keras.models import Model, Sequential
 import keras
+
+from sklearn.model_selection import train_test_split
 
 from utils import DataSet
 
@@ -15,6 +20,27 @@ stance_id = {
     'disagree': 1,
     'unrelated': 2
 }
+
+
+def create_dataset():
+    all_data = pd.read_csv('../data_sets/train_stances.csv')
+    to_join = pd.read_csv('../data_sets/train_bodies.csv')
+    return pd.merge(all_data, to_join)
+
+
+def even_classes(data, sample='min_class'):
+    sample_n = sample
+
+    groups = data.groupby('Stance')
+    counts = groups.size()
+    if sample == 'min_class':
+        sample_n = min(counts)
+    elif sample == 'max_class':
+        sample_n = max(counts)
+
+    sampled = map(lambda g: g[1].sample(sample_n, replace=True), groups)
+    return pd.concat(sampled).reset_index(drop=True)
+
 
 def main():
     print("Loading training set")
@@ -58,7 +84,9 @@ def main():
 
     # Converts the N x 1 class vector to a N * classes binary matrix
     # This is needed to placate keras, for some bizarre reason
-    train_stances = keras.utils.to_categorical(stances, 4)
+    stance_classes = np.fromiter((stance_id[s] for s in stances),
+                                 np.int, len(stances)).reshape(-1, 1)
+    train_stances = keras.utils.to_categorical(stance_classes, 4)
 
 
     print("Create Sequential model")
@@ -75,7 +103,7 @@ def main():
     model.fit(train_seq, train_stances, batch_size=32, epochs=10, verbose=1, validation_split=0.1, shuffle=True)
 
     import textwrap
-    test_idx = 0
+    test_idx = train_set[train_set['Stance'] == 'unrelated'].index[0]
     print('~~~ Test ~~~')
     print('Headline: ', headlines[test_idx])
     print('Article: ', textwrap.shorten(articles[test_idx], 1000))

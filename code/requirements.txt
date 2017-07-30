@@ -1,10 +1,11 @@
 tqdm
 scikit-learn
 numpy
+pandas
 scipy
 nltk
 gensim
 keras
 theano
-tensorflow 
+tensorflow
 
