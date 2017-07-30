@@ -17,6 +17,7 @@ class Vectors(object):
         google_vec = gensim.models.KeyedVectors.load_word2vec_format('../data_sets/GoogleNews-vectors-negative300.bin', binary=True)
 
 
+
 def test_vectors():
     print("Loading google word2vecs")
     v = Vectors()
