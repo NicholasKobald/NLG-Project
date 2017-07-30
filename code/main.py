@@ -47,11 +47,24 @@ def create_model(train_set, tk, max_words=100):
     articles = train_set['articleBody']
     headlines = train_set['Headline']
 
+
+    articles = train_set.triples['articles']
+    headlines = train_set.triples['headlines']
+
+    test_articles = test_set.triples['articles']
+    test_headlines = test_set.triples['headlines']
+
+    assert(len(test_articles) == len(test_headlines))
+    print("Testing on {} articles".format(len(test_articles)))
+
+
+
     # Train vocab and generate BOW representation
     tk.fit_on_texts(articles.append(headlines))
     train_seq = create_bow(articles, headlines, tk)
     print("Trained seq:", train_seq[:5])
     print("Seq has shape:", train_seq.shape)
+
 
     # Converts the N x 1 class vector to a N * classes binary matrix
     # This is needed to placate keras, for some bizarre reason
@@ -59,13 +72,13 @@ def create_model(train_set, tk, max_words=100):
 
     print("Create Sequential model")
     model = Sequential()
+
     # Input layer takes concatenated BOW vectors
     model.add(Dense(128, input_shape=(2 * max_words,)))
     model.add(Activation('relu'))
     # 4-class outputs - run argmax or on this to get a most probable class
     model.add(Dense(4))
     model.add(Activation('softmax'))
-    # model.add(Activation('sigmoid'))
 
     model.compile(loss='categorical_crossentropy', optimizer='rmsprop', metrics=['accuracy'])
     model.fit(train_seq, train_stances, batch_size=32, epochs=5, verbose=1, validation_split=0.1, shuffle=True)
