@@ -47,24 +47,11 @@ def create_model(train_set, tk, max_words=100):
     articles = train_set['articleBody']
     headlines = train_set['Headline']
 
-
-    articles = train_set.triples['articles']
-    headlines = train_set.triples['headlines']
-
-    test_articles = test_set.triples['articles']
-    test_headlines = test_set.triples['headlines']
-
-    assert(len(test_articles) == len(test_headlines))
-    print("Testing on {} articles".format(len(test_articles)))
-
-
-
     # Train vocab and generate BOW representation
     tk.fit_on_texts(articles.append(headlines))
     train_seq = create_bow(articles, headlines, tk)
     print("Trained seq:", train_seq[:5])
     print("Seq has shape:", train_seq.shape)
-
 
     # Converts the N x 1 class vector to a N * classes binary matrix
     # This is needed to placate keras, for some bizarre reason
