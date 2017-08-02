@@ -1,0 +1,14 @@
+def compute_bigrams(text):
+	bigrams=[]
+	for j in text:
+		for i in range(len(text[j])-1):
+			words={}
+			text=text.split(' ')
+			if text[i]==' ' or text[i+1]==' ':
+				continue
+			word_pair=' '.join(text[i:i+2])
+			if words.has_key(word_pair):
+				words[word_pair] = words[word_pair]+1
+			else:
+				words[word_pair]=1
+		return words
