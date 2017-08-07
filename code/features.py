@@ -28,7 +28,7 @@ def load_word2vec():
 
 def get_vectors(word_to_vec, text):
     tokens = text_to_word_sequence(text)
-    return np.asarray([word_to_vec[token] for token in text if token in word_to_vec])
+    return np.asarray([word_to_vec[token] for token in tokens if token in word_to_vec])
 
 #Given a list of articles/headlines etc computes bigrams
 #Returns list of dict, with each entry the bigram count for associated text
