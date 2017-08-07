@@ -3,13 +3,15 @@
 #https://github.com/FakeNewsChallenge/fnc-1-baseline
 import string
 from csv import DictReader
-from sklearn import feature_extraction
 
 import nltk
 from nltk.corpus import stopwords
+
+from sklearn import feature_extraction
 from sklearn.feature_extraction.text import CountVectorizer
 
 STOP_WORDS = set(stopwords.words('english'))
+
 
 class DataSet():
 
@@ -80,14 +82,6 @@ class DataSet():
             self.triples['articles'].append(self.articles[s['Body ID']])
             self.triples['headlines'].append(s['Headline'])
 
-
-#overkill?
-#could encapsulate article, headline pairs and
-#store things like overlapp between them nicely
-#with an object like this
-class Article():
-    def __init__(self, article, headline):
-        pass
 
 def normalize_word(w):
     _wnl = nltk.WordNetLemmatizer()

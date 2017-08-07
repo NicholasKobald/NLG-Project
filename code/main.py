@@ -1,10 +1,10 @@
 import numpy as np
 import pandas as pd
 
+import keras
 from keras.preprocessing.text import Tokenizer
 from keras.layers import Input, LSTM, Dense, Activation, Embedding, GRU, Dropout
 from keras.models import Model, Sequential
-import keras
 
 from sklearn.model_selection import train_test_split
 
