@@ -2,13 +2,14 @@ import numpy as np
 import pandas as pd
 
 from keras.preprocessing.text import Tokenizer
-from keras.layers import Input, LSTM, Dense, Activation
+from keras.layers import Input, LSTM, Dense, Activation, Embedding, GRU, Dropout
 from keras.models import Model, Sequential
 import keras
 
 from sklearn.model_selection import train_test_split
 
 from features import create_bow
+from utils import generate_vocab
 
 np.random.seed(7)
 
@@ -41,15 +42,14 @@ def stance_matrix(stances):
     return keras.utils.to_categorical(stance_classes, 4)
 
 
-def create_model(train_set, tk, max_words=100):
+def create_model(train_set, vocab, max_words=100):
     # parallel lists
     stances = train_set['Stance']
     articles = train_set['articleBody']
     headlines = train_set['Headline']
 
     # Train vocab and generate BOW representation
-    tk.fit_on_texts(articles.append(headlines))
-    train_seq = create_bow(articles, headlines, tk)
+    train_seq = create_bow(articles, headlines, vocab)
     print("Trained seq:", train_seq[:5])
     print("Seq has shape:", train_seq.shape)
 
@@ -61,14 +61,22 @@ def create_model(train_set, tk, max_words=100):
     model = Sequential()
 
     # Input layer takes concatenated BOW vectors
-    model.add(Dense(128, input_shape=(2 * max_words,)))
-    model.add(Activation('relu'))
+    model.add(Dense(600, input_shape=(2 * max_words,), activation='relu'))
+    model.add(Dropout(0.3))
+
+    model.add(Dense(600, activation='relu'))
+    model.add(Dropout(0.3))
+
+    model.add(Dense(600, activation='relu'))
+    model.add(Dropout(0.3))
+    # model.add(Embedding(2, 200, input_length=2 * max_words))
+    # model.add(GRU(10))
     # 4-class outputs - run argmax or on this to get a most probable class
     model.add(Dense(4))
     model.add(Activation('softmax'))
 
-    model.compile(loss='categorical_crossentropy', optimizer='rmsprop', metrics=['accuracy'])
-    model.fit(train_seq, train_stances, batch_size=32, epochs=5, verbose=1, validation_split=0.1, shuffle=True)
+    model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
+    model.fit(train_seq, train_stances, batch_size=64, epochs=3, verbose=1, validation_split=0.1, shuffle=True)
     return model
 
 
@@ -77,18 +85,23 @@ def split_dataset(dataset):
     # train_set = even_classes(train_set, sample=2000)
     return train_set, test_set
 
-MAX_WORDS = 1000
+MAX_WORDS = 5000
 
 
 def main():
     train_dataset = create_dataset()
     train_set, eval_set = split_dataset(train_dataset)
 
-    tk = Tokenizer(num_words=MAX_WORDS, lower=True, split=" ")
-    model = create_model(train_set, tk, MAX_WORDS)
+    vocab = generate_vocab(train_set, MAX_WORDS, stop_words='english')
+    # tk = Tokenizer(num_words=MAX_WORDS, lower=True, split=" ")
+    model = create_model(train_set, vocab, MAX_WORDS)
+
+    eval_X = create_bow(eval_set['articleBody'], eval_set['Headline'], vocab)
+    eval_Y = stance_matrix(eval_set['Stance'])
+    print(model.evaluate(eval_X, eval_Y, verbose=1))
 
     test_dataset = create_dataset(name='test')
-    test_X = create_bow(test_dataset['articleBody'], test_dataset['Headline'], tk)
+    test_X = create_bow(test_dataset['articleBody'], test_dataset['Headline'], vocab)
     test_Y = stance_matrix(test_dataset['Stance'])
 
     print(model.evaluate(test_X, test_Y, verbose=1))

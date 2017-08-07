@@ -1,10 +1,14 @@
 #The code based on baseline provided by the FNC organization,
 #under the the Apache License
 #https://github.com/FakeNewsChallenge/fnc-1-baseline
-
+import string
 from csv import DictReader
+from sklearn import feature_extraction
 
+import nltk
 from nltk.corpus import stopwords
+from sklearn.feature_extraction.text import CountVectorizer
+
 STOP_WORDS = set(stopwords.words('english'))
 
 class DataSet():
@@ -84,3 +88,26 @@ class DataSet():
 class Article():
     def __init__(self, article, headline):
         pass
+
+def normalize_word(w):
+    _wnl = nltk.WordNetLemmatizer()
+    return _wnl.lemmatize(w).lower()
+
+
+def get_all_stopwords():
+    stop_words_nltk = set(stopwords.words('english'))  # use set for faster "not in" check
+    stop_words_sklearn = feature_extraction.text.ENGLISH_STOP_WORDS
+    all_stop_words = stop_words_sklearn.union(stop_words_nltk)
+    return all_stop_words
+
+
+def get_tokenized_lemmas_without_stopwords(s):
+    all_stop_words = get_all_stopwords()
+    return [normalize_word(t) for t in nltk.word_tokenize(s)
+            if t not in string.punctuation and t.lower() not in all_stop_words]
+
+
+def generate_vocab(dataset, size=5000, stop_words=None):
+    cv = CountVectorizer(max_features=size, tokenizer=get_tokenized_lemmas_without_stopwords)
+    cv.fit(dataset['Headline'] + dataset['articleBody'])
+    return cv.vocabulary_
