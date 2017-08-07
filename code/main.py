@@ -8,7 +8,7 @@ import keras
 
 from sklearn.model_selection import train_test_split
 
-from features import create_bow
+from features import create_bow, load_word2vec
 from utils import generate_vocab
 
 np.random.seed(7)
@@ -91,8 +91,9 @@ MAX_WORDS = 5000
 def main():
     train_dataset = create_dataset()
     train_set, eval_set = split_dataset(train_dataset)
+    test_dataset = create_dataset(name='test')
 
-    vocab = generate_vocab(train_set, MAX_WORDS, stop_words='english')
+    vocab = generate_vocab(pd.concat([train_set, test_dataset]), MAX_WORDS, stop_words='english')
     # tk = Tokenizer(num_words=MAX_WORDS, lower=True, split=" ")
     model = create_model(train_set, vocab, MAX_WORDS)
 
@@ -100,7 +101,6 @@ def main():
     eval_Y = stance_matrix(eval_set['Stance'])
     print(model.evaluate(eval_X, eval_Y, verbose=1))
 
-    test_dataset = create_dataset(name='test')
     test_X = create_bow(test_dataset['articleBody'], test_dataset['Headline'], vocab)
     test_Y = stance_matrix(test_dataset['Stance'])
 
