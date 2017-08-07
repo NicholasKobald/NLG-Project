@@ -4,13 +4,23 @@ warnings.filterwarnings(action='ignore', category=UserWarning, module='gensim')
 import numpy as np
 import gensim
 
+from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer
+from utils import get_tokenized_lemmas_without_stopwords
+
 from keras.preprocessing.text import text_to_word_sequence
 
 
-def create_bow(articles, headlines, tokenizer, mode='binary'):
-    bodies_bow = tokenizer.texts_to_matrix(articles, mode=mode)
-    heads_bow = tokenizer.texts_to_matrix(headlines, mode=mode)
-    return np.hstack((bodies_bow, heads_bow))
+def create_bow(articles, headlines, vocab, stop_words='english', binary=False):
+    hcv = TfidfVectorizer(vocabulary=vocab, norm='l2',
+                          tokenizer=get_tokenized_lemmas_without_stopwords, binary=binary)
+    bcv = TfidfVectorizer(vocabulary=vocab, norm='l2',
+                          tokenizer=get_tokenized_lemmas_without_stopwords, binary=binary)
+    X_head = hcv.fit_transform(articles).toarray()
+    X_body = bcv.fit_transform(headlines).toarray()
+
+    print(X_head.shape, X_body.shape, np.hstack((X_head, X_body)).shape)
+
+    return np.hstack((X_body, X_head))
 
 def load_word2vec():
     google_vec = gensim.models.KeyedVectors.load_word2vec_format('../data_sets/GoogleNews-vectors-negative300.bin', binary=True)
@@ -19,7 +29,7 @@ def load_word2vec():
 def get_vectors(word_to_vec, text):
     tokens = text_to_word_sequence(text)
     return np.asarray([word_to_vec[token] for token in text if token in word_to_vec])
-    
+
 #Given a list of articles/headlines etc computes bigrams
 #Returns list of dict, with each entry the bigram count for associated text
 def compute_bigrams(text):
