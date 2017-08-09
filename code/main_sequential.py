@@ -20,6 +20,11 @@ np.random.seed(7)
 
 stance_id = {'agree': 0, 'discuss': 2, 'disagree': 1, 'unrelated': 3}
 
+MAX_WORDS = 5000
+
+BATCH_SIZE = 64
+MAX_HEAD_LEN = 20
+MAX_ART_LEN = 200
 
 def create_dataset(name='train'):
     all_data = pd.read_csv('../data_sets/' + name + '_stances.csv')
@@ -46,10 +51,7 @@ def stance_matrix(stances):
                                  np.int, len(stances)).reshape(-1, 1)
     return keras.utils.to_categorical(stance_classes, 4)
 
-BATCH_SIZE = 64
-# We may want to experiment with adjusting these two
-MAX_HEAD_LEN = 20
-MAX_ART_LEN = 200
+
 
 def create_model(train_set, w2v, max_words=100):
     # parallel lists
@@ -95,6 +97,7 @@ def create_model(train_set, w2v, max_words=100):
 
 
 class WordVecSequence(Sequence):
+
     def __init__(self, w2v, heads, arts, stances=None, batch_size=64):
         self.w2v_mat = w2v.syn0
         self.heads = heads
@@ -125,7 +128,6 @@ def split_dataset(dataset):
     # train_set = even_classes(train_set, sample=2000)
     return train_set, test_set
 
-MAX_WORDS = 5000
 
 def main():
     train_dataset = create_dataset()
@@ -133,7 +135,7 @@ def main():
     test_dataset = create_dataset(name='test')
 
     w2v = load_word2vec(
-        fname='../data_sets/word2vec_obj', 
+        fname='../data_sets/word2vec_obj.object',
         bin_fname='../data_sets/GoogleNews-vectors-negative300.bin'
     )
     print('Loaded word2vec')

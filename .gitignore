@@ -2,6 +2,8 @@
 __pycache__/
 *.py[cod]
 *$py.class
+# wierd object files
+*.object 
 
 # C extensions
 *.so

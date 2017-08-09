@@ -1,8 +1,11 @@
 #The code based on baseline provided by the FNC organization,
 #under the the Apache License
 #https://github.com/FakeNewsChallenge/fnc-1-baseline
+import os
 import string
 from csv import DictReader
+
+import numpy as np
 
 import nltk
 from nltk.corpus import stopwords
@@ -12,12 +15,10 @@ from sklearn.feature_extraction.text import CountVectorizer
 
 from gensim.models import KeyedVectors
 
-import numpy as np
 
-import os
 
 STOP_WORDS = set(stopwords.words('english'))
-
+_wnl = nltk.WordNetLemmatizer()
 
 class DataSet():
 
@@ -89,7 +90,6 @@ class DataSet():
             self.triples['headlines'].append(s['Headline'])
 
 
-_wnl = nltk.WordNetLemmatizer()
 
 
 def normalize_word(w):
