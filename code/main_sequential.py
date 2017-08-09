@@ -12,15 +12,14 @@ from sklearn.model_selection import train_test_split
 from features import create_bow, get_w2v_idx
 from utils import generate_vocab, gen_or_load_feats, load_word2vec
 
+
 np.random.seed(7)
 
 stance_id = {'agree': 0, 'discuss': 3, 'disagree': 1, 'unrelated': 2}
 
-
 MAX_WORDS = 5000
 
 BATCH_SIZE = 64
-# We may want to experiment with adjusting these two
 MAX_HEAD_LEN = 20
 MAX_ART_LEN = 200
 

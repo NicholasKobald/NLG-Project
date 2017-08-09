@@ -15,6 +15,8 @@ np.random.seed(7)
 
 stance_id = {'agree': 0, 'discuss': 3, 'disagree': 1, 'unrelated': 2}
 
+MAX_WORDS = 5000
+
 
 def create_dataset(name='train'):
     all_data = pd.read_csv('../data_sets/' + name + '_stances.csv')
@@ -85,7 +87,6 @@ def split_dataset(dataset):
     # train_set = even_classes(train_set, sample=2000)
     return train_set, test_set
 
-MAX_WORDS = 5000
 
 
 def main():
