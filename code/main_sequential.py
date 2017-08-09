@@ -133,7 +133,7 @@ def main():
     test_dataset = create_dataset(name='test')
 
     w2v = load_word2vec(
-        fname='../data_sets/word2vec_obj',
+        fname='../data_sets/word2vec_obj.object',
         bin_fname='../data_sets/GoogleNews-vectors-negative300.bin'
     )
     print('Loaded word2vec')
