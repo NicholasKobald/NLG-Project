@@ -10,6 +10,10 @@ from nltk.corpus import stopwords
 from sklearn import feature_extraction
 from sklearn.feature_extraction.text import CountVectorizer
 
+import numpy as np
+
+import os
+
 STOP_WORDS = set(stopwords.words('english'))
 
 
@@ -83,8 +87,10 @@ class DataSet():
             self.triples['headlines'].append(s['Headline'])
 
 
+_wnl = nltk.WordNetLemmatizer()
+
+
 def normalize_word(w):
-    _wnl = nltk.WordNetLemmatizer()
     return _wnl.lemmatize(w).lower()
 
 
@@ -95,13 +101,33 @@ def get_all_stopwords():
     return all_stop_words
 
 
-def get_tokenized_lemmas_without_stopwords(s):
-    all_stop_words = get_all_stopwords()
+def get_tokenized_lemmas_without_stopwords(s, stop_words=get_all_stopwords()):
     return [normalize_word(t) for t in nltk.word_tokenize(s)
-            if t not in string.punctuation and t.lower() not in all_stop_words]
+            if t not in string.punctuation
+            and t.lower() not in stop_words]
 
 
 def generate_vocab(dataset, size=5000, stop_words=None):
     cv = CountVectorizer(max_features=size, tokenizer=get_tokenized_lemmas_without_stopwords)
     cv.fit(dataset['Headline'] + dataset['articleBody'])
     return cv.vocabulary_
+
+
+def transform_text(t, vocab, max_len):
+    tokens = get_tokenized_lemmas_without_stopwords(t)
+    unk_token = vocab['unk']
+    res = np.full(max_len, unk_token.index)
+
+    for i in range(min(max_len, len(tokens))):
+        res[i] = vocab.get(tokens[i], vocab['unk']).index
+
+    return res
+
+
+def gen_or_load_feats(generator, feature_file):
+    if not os.path.isfile(feature_file):
+        feats = generator()
+        np.save(feature_file, feats)
+
+    return np.load(feature_file)
+

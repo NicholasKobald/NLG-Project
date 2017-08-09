@@ -5,7 +5,7 @@ import numpy as np
 import gensim
 
 from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer
-from utils import get_tokenized_lemmas_without_stopwords
+from utils import get_tokenized_lemmas_without_stopwords, transform_text
 
 from keras.preprocessing.text import text_to_word_sequence
 
@@ -23,8 +23,18 @@ def create_bow(articles, headlines, vocab, stop_words='english', binary=False):
     return np.hstack((X_body, X_head))
 
 
+def get_w2v_idx(texts, w2v, max_len):
+    return np.asarray([
+        transform_text(t, w2v.vocab, max_len)
+        for t in texts
+    ])
+
+
 def load_word2vec():
-    google_vec = gensim.models.KeyedVectors.load_word2vec_format('../data_sets/GoogleNews-vectors-negative300.bin', binary=True)
+    # google_vec = gensim.models.KeyedVectors.load_word2vec_format('../data_sets/GoogleNews-vectors-negative300-SLIM.bin', binary=True)
+    w2v = gensim.models.KeyedVectors.load('../data_sets/word2vec_obj', mmap='r')
+    google_vec = w2v.wv
+    del w2v
     return google_vec
 
 
