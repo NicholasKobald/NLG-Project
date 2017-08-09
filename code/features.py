@@ -30,14 +30,6 @@ def get_w2v_idx(texts, w2v, max_len):
     ])
 
 
-def load_word2vec():
-    # google_vec = gensim.models.KeyedVectors.load_word2vec_format('../data_sets/GoogleNews-vectors-negative300-SLIM.bin', binary=True)
-    w2v = gensim.models.KeyedVectors.load('../data_sets/word2vec_obj', mmap='r')
-    google_vec = w2v.wv
-    del w2v
-    return google_vec
-
-
 def get_vectors(word_to_vec, text):
     tokens = text_to_word_sequence(text)
     return np.asarray([word_to_vec[token] for token in tokens if token in word_to_vec])

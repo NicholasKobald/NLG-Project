@@ -9,8 +9,8 @@ from keras.utils.data_utils import Sequence
 
 from sklearn.model_selection import train_test_split
 
-from features import create_bow, load_word2vec, get_w2v_idx
-from utils import generate_vocab, gen_or_load_feats
+from features import create_bow, get_w2v_idx
+from utils import generate_vocab, gen_or_load_feats, load_word2vec
 
 np.random.seed(7)
 
@@ -128,7 +128,10 @@ def main():
     train_set, eval_set = split_dataset(train_dataset)
     test_dataset = create_dataset(name='test')
 
-    w2v = load_word2vec()
+    w2v = load_word2vec(
+        fname='../data_sets/word2vec_obj', 
+        bin_fname='../data_sets/GoogleNews-vectors-negative300.bin'
+    )
     print('Loaded word2vec')
 
     eval_Y = stance_matrix(eval_set['Stance'])

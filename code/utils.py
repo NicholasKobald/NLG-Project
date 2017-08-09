@@ -10,6 +10,8 @@ from nltk.corpus import stopwords
 from sklearn import feature_extraction
 from sklearn.feature_extraction.text import CountVectorizer
 
+from gensim.models import KeyedVectors
+
 import numpy as np
 
 import os
@@ -131,3 +133,17 @@ def gen_or_load_feats(generator, feature_file):
 
     return np.load(feature_file)
 
+
+def load_word2vec(fname, bin_fname):
+    # We need to generate the memmap-able format from the original binary
+    # if it isn't already available
+    if not os.path.isfile(fname):
+        print('Processed word2vec data not found, generating from binary...')
+        google_vec = KeyedVectors.load_word2vec_format(bin_fname, binary=True)
+        google_vec.save(fname)
+        del google_vec
+
+    w2v = KeyedVectors.load(fname, mmap='r')
+    google_vec = w2v.wv
+    del w2v
+    return google_vec
