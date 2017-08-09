@@ -12,9 +12,13 @@ from sklearn.model_selection import train_test_split
 from features import create_bow, get_w2v_idx
 from utils import generate_vocab, gen_or_load_feats, load_word2vec
 
+from score import report_score, LABELS
+
+from collections import Counter
+
 np.random.seed(7)
 
-stance_id = {'agree': 0, 'discuss': 3, 'disagree': 1, 'unrelated': 2}
+stance_id = {'agree': 0, 'discuss': 2, 'disagree': 1, 'unrelated': 3}
 
 
 def create_dataset(name='train'):
@@ -85,8 +89,8 @@ def create_model(train_set, w2v, max_words=100):
 
     model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
     train_seq = WordVecSequence(w2v, train_heads, train_arts, train_stances)
-    model.fit_generator(train_seq, len(train_heads) // BATCH_SIZE, epochs=2, verbose=1, 
-                        use_multiprocessing=False, workers=8)
+    model.fit_generator(train_seq, round(len(train_heads) / BATCH_SIZE),
+                        epochs=1, verbose=1, use_multiprocessing=False, workers=8)
     return model
 
 
@@ -97,7 +101,7 @@ class WordVecSequence(Sequence):
         self.arts = arts
         self.stances = stances
         self.batch_size = batch_size
-        self.num_entries = len(self.heads) // self.batch_size
+        self.num_entries = round(len(self.heads) / self.batch_size)
         print(len(self.heads), self.num_entries)
 
     def __len__(self):
@@ -134,35 +138,37 @@ def main():
     )
     print('Loaded word2vec')
 
-    eval_Y = stance_matrix(eval_set['Stance'])
-    eval_arts = get_w2v_idx(eval_set['articleBody'], w2v, 200)
-    eval_heads = get_w2v_idx(eval_set['Headline'], w2v, 20)
-    eval_seq = WordVecSequence(w2v, eval_heads, eval_arts, eval_Y, batch_size=BATCH_SIZE)
+    # eval_Y = stance_matrix(eval_set['Stance'])
+    # eval_arts = get_w2v_idx(eval_set['articleBody'], w2v, 200)
+    # eval_heads = get_w2v_idx(eval_set['Headline'], w2v, 20)
+    # eval_seq = WordVecSequence(w2v, eval_heads, eval_arts, eval_Y, batch_size=BATCH_SIZE)
     
     model = create_model(train_set, w2v, MAX_WORDS)
     
-    print('Evaluating model with {} entries ({} batches)'.format(
-        len(eval_set), len(eval_set) // BATCH_SIZE))
-    print(model.evaluate_generator(eval_seq, len(eval_set) // BATCH_SIZE, 
-                              use_multiprocessing=False, workers=8))
+    # print('Evaluating model with {} entries ({} batches)'.format(
+    #     len(eval_set), len(eval_set) // BATCH_SIZE))
+    # print(model.evaluate_generator(eval_seq, len(eval_set) // BATCH_SIZE, 
+    #                           use_multiprocessing=False, workers=8))
     # print(model.predict_generator(eval_seq, len(eval_set) // BATCH_SIZE, 
     #                               use_multiprocessing=False, workers=8, verbose=1))
-    exit(0)
 
-    test_X = create_bow(test_dataset['articleBody'], test_dataset['Headline'], vocab)
     test_Y = stance_matrix(test_dataset['Stance'])
+    test_arts = get_w2v_idx(test_dataset['articleBody'], w2v, 200)
+    test_heads = get_w2v_idx(test_dataset['Headline'], w2v, 20)
+    # test_seq = WordVecSequence(w2v, test_heads, test_arts, test_Y, batch_size=BATCH_SIZE)
+    test_seq = WordVecSequence(w2v, test_heads, test_arts, batch_size=BATCH_SIZE)
+    
+    print('Evaluating model with {} entries ({} batches)'.format(len(test_dataset), len(test_dataset) // BATCH_SIZE))
+    # print(model.evaluate_generator(test_seq, len(test_dataset) // BATCH_SIZE, use_multiprocessing=False, workers=8))
+    preds = model.predict_generator(test_seq, round(len(test_dataset) / BATCH_SIZE), 
+                                    use_multiprocessing=False, workers=8, verbose=1)
+    preds = preds.argmax(axis=1)
+    # print(preds.argmax(axis=1).shape)
+    print(Counter(preds))
+    pred_stances = [LABELS[p] for p in preds]
+    print(Counter(pred_stances))
+    report_score(list(test_dataset['Stance']), pred_stances)
 
-    print(model.evaluate(test_X, test_Y, verbose=1))
-
-    # import textwrap
-    # test_idx = train_set[train_set['Stance'] == 'unrelated'].index[0]
-    # print('~~~ Test ~~~')
-    # print('Headline: ', headlines[test_idx])
-    # print('Article: ', textwrap.shorten(articles[test_idx], 1000))
-    # print('Stance: ', stances[test_idx])
-    # pred = model.predict(train_seq[test_idx].reshape(1, -1), batch_size=1)[0]
-    # print('Predictions: ', {k: pred[stance_id[k]] for k in stance_id})
-    # print('Top prediction: ', np.argmax(pred))
 
 if __name__ == "__main__":
     main()
