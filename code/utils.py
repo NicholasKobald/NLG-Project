@@ -1,8 +1,11 @@
 #The code based on baseline provided by the FNC organization,
 #under the the Apache License
 #https://github.com/FakeNewsChallenge/fnc-1-baseline
+import os
 import string
 from csv import DictReader
+
+import numpy as np
 
 import nltk
 from nltk.corpus import stopwords
@@ -12,12 +15,10 @@ from sklearn.feature_extraction.text import CountVectorizer
 
 from gensim.models import KeyedVectors
 
-import numpy as np
 
-import os
 
 STOP_WORDS = set(stopwords.words('english'))
-
+_wnl = nltk.WordNetLemmatizer()
 
 class DataSet():
 
@@ -89,7 +90,6 @@ class DataSet():
             self.triples['headlines'].append(s['Headline'])
 
 
-_wnl = nltk.WordNetLemmatizer()
 
 
 def normalize_word(w):
@@ -137,13 +137,13 @@ def gen_or_load_feats(generator, feature_file):
 def load_word2vec(fname, bin_fname):
     # We need to generate the memmap-able format from the original binary
     # if it isn't already available
-    if not os.path.isfile(fname):
+    if not os.path.isfile(fname + '.object'):
         print('Processed word2vec data not found, generating from binary...')
         google_vec = KeyedVectors.load_word2vec_format(bin_fname, binary=True)
-        google_vec.save(fname)
+        google_vec.save(fname + '.object')
         del google_vec
 
-    w2v = KeyedVectors.load(fname, mmap='r')
+    w2v = KeyedVectors.load(fname + '.object', mmap='r')
     google_vec = w2v.wv
     del w2v
     return google_vec

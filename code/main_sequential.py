@@ -17,6 +17,13 @@ np.random.seed(7)
 stance_id = {'agree': 0, 'discuss': 3, 'disagree': 1, 'unrelated': 2}
 
 
+MAX_WORDS = 5000
+
+BATCH_SIZE = 64
+# We may want to experiment with adjusting these two
+MAX_HEAD_LEN = 20
+MAX_ART_LEN = 200
+
 def create_dataset(name='train'):
     all_data = pd.read_csv('../data_sets/' + name + '_stances.csv')
     to_join = pd.read_csv('../data_sets/' + name + '_bodies.csv')
@@ -42,10 +49,7 @@ def stance_matrix(stances):
                                  np.int, len(stances)).reshape(-1, 1)
     return keras.utils.to_categorical(stance_classes, 4)
 
-BATCH_SIZE = 64
-# We may want to experiment with adjusting these two
-MAX_HEAD_LEN = 20
-MAX_ART_LEN = 200
+
 
 def create_model(train_set, w2v, max_words=100):
     # parallel lists
@@ -85,12 +89,13 @@ def create_model(train_set, w2v, max_words=100):
 
     model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
     train_seq = WordVecSequence(w2v, train_heads, train_arts, train_stances)
-    model.fit_generator(train_seq, len(train_heads) // BATCH_SIZE, epochs=2, verbose=1, 
+    model.fit_generator(train_seq, len(train_heads) // BATCH_SIZE, epochs=2, verbose=1,
                         use_multiprocessing=False, workers=8)
     return model
 
 
 class WordVecSequence(Sequence):
+
     def __init__(self, w2v, heads, arts, stances=None, batch_size=64):
         self.w2v_mat = w2v.syn0
         self.heads = heads
@@ -121,7 +126,6 @@ def split_dataset(dataset):
     # train_set = even_classes(train_set, sample=2000)
     return train_set, test_set
 
-MAX_WORDS = 5000
 
 def main():
     train_dataset = create_dataset()
@@ -129,7 +133,7 @@ def main():
     test_dataset = create_dataset(name='test')
 
     w2v = load_word2vec(
-        fname='../data_sets/word2vec_obj', 
+        fname='../data_sets/word2vec_obj',
         bin_fname='../data_sets/GoogleNews-vectors-negative300.bin'
     )
     print('Loaded word2vec')
@@ -138,14 +142,14 @@ def main():
     eval_arts = get_w2v_idx(eval_set['articleBody'], w2v, 200)
     eval_heads = get_w2v_idx(eval_set['Headline'], w2v, 20)
     eval_seq = WordVecSequence(w2v, eval_heads, eval_arts, eval_Y, batch_size=BATCH_SIZE)
-    
+
     model = create_model(train_set, w2v, MAX_WORDS)
-    
+
     print('Evaluating model with {} entries ({} batches)'.format(
         len(eval_set), len(eval_set) // BATCH_SIZE))
-    print(model.evaluate_generator(eval_seq, len(eval_set) // BATCH_SIZE, 
+    print(model.evaluate_generator(eval_seq, len(eval_set) // BATCH_SIZE,
                               use_multiprocessing=False, workers=8))
-    # print(model.predict_generator(eval_seq, len(eval_set) // BATCH_SIZE, 
+    # print(model.predict_generator(eval_seq, len(eval_set) // BATCH_SIZE,
     #                               use_multiprocessing=False, workers=8, verbose=1))
     exit(0)
 
