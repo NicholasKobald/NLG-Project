@@ -137,13 +137,13 @@ def gen_or_load_feats(generator, feature_file):
 def load_word2vec(fname, bin_fname):
     # We need to generate the memmap-able format from the original binary
     # if it isn't already available
-    if not os.path.isfile(fname + '.object'):
+    if not os.path.isfile(fname):
         print('Processed word2vec data not found, generating from binary...')
         google_vec = KeyedVectors.load_word2vec_format(bin_fname, binary=True)
-        google_vec.save(fname + '.object')
+        google_vec.save(fname)
         del google_vec
 
-    w2v = KeyedVectors.load(fname + '.object', mmap='r')
+    w2v = KeyedVectors.load(fname, mmap='r')
     google_vec = w2v.wv
     del w2v
     return google_vec
