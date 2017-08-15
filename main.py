@@ -18,25 +18,6 @@ stance_id = {'agree': 0, 'discuss': 3, 'disagree': 1, 'unrelated': 2}
 MAX_WORDS = 5000
 
 
-def create_dataset(name='train'):
-    all_data = pd.read_csv('../data_sets/' + name + '_stances.csv')
-    to_join = pd.read_csv('../data_sets/' + name + '_bodies.csv')
-    return pd.merge(all_data, to_join)
-
-
-def even_classes(data, sample='min_class'):
-    sample_n = sample
-
-    groups = data.groupby('Stance')
-    counts = groups.size()
-    if sample == 'min_class':
-        sample_n = min(counts)
-    elif sample == 'max_class':
-        sample_n = max(counts)
-
-    sampled = map(lambda g: g[1].sample(sample_n, replace=True), groups)
-    return pd.concat(sampled).reset_index(drop=True)
-
 
 def stance_matrix(stances):
     stance_classes = np.fromiter((stance_id[s] for s in stances),

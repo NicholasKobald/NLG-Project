@@ -4,6 +4,7 @@ __pycache__/
 *$py.class
 # wierd object files
 *.object 
+*word2vec_obj*
 
 # C extensions
 *.so

@@ -11,6 +11,7 @@ from sklearn.model_selection import train_test_split
 
 from features import create_bow, get_w2v_idx
 from utils import generate_vocab, gen_or_load_feats, load_word2vec
+from utils import create_dataset, even_classes
 
 from score import report_score, LABELS
 
@@ -26,24 +27,6 @@ BATCH_SIZE = 64
 MAX_HEAD_LEN = 20
 MAX_ART_LEN = 200
 
-def create_dataset(name='train'):
-    all_data = pd.read_csv('../data_sets/' + name + '_stances.csv')
-    to_join = pd.read_csv('../data_sets/' + name + '_bodies.csv')
-    return pd.merge(all_data, to_join)
-
-
-def even_classes(data, sample='min_class'):
-    sample_n = sample
-
-    groups = data.groupby('Stance')
-    counts = groups.size()
-    if sample == 'min_class':
-        sample_n = min(counts)
-    elif sample == 'max_class':
-        sample_n = max(counts)
-
-    sampled = map(lambda g: g[1].sample(sample_n, replace=True), groups)
-    return pd.concat(sampled).reset_index(drop=True)
 
 
 def stance_matrix(stances):
@@ -135,8 +118,8 @@ def main():
     test_dataset = create_dataset(name='test')
 
     w2v = load_word2vec(
-        fname='../data_sets/word2vec_obj.object',
-        bin_fname='../data_sets/GoogleNews-vectors-negative300.bin'
+        fname='data_sets/word2vec_obj.object',
+        bin_fname='data_sets/GoogleNews-vectors-negative300.bin'
     )
     print('Loaded word2vec')
 
@@ -144,14 +127,14 @@ def main():
     # eval_arts = get_w2v_idx(eval_set['articleBody'], w2v, 200)
     # eval_heads = get_w2v_idx(eval_set['Headline'], w2v, 20)
     # eval_seq = WordVecSequence(w2v, eval_heads, eval_arts, eval_Y, batch_size=BATCH_SIZE)
-    
+
     model = create_model(train_set, w2v, MAX_WORDS)
-    
+
     # print('Evaluating model with {} entries ({} batches)'.format(
     #     len(eval_set), len(eval_set) // BATCH_SIZE))
-    # print(model.evaluate_generator(eval_seq, len(eval_set) // BATCH_SIZE, 
+    # print(model.evaluate_generator(eval_seq, len(eval_set) // BATCH_SIZE,
     #                           use_multiprocessing=False, workers=8))
-    # print(model.predict_generator(eval_seq, len(eval_set) // BATCH_SIZE, 
+    # print(model.predict_generator(eval_seq, len(eval_set) // BATCH_SIZE,
     #                               use_multiprocessing=False, workers=8, verbose=1))
 
     test_Y = stance_matrix(test_dataset['Stance'])
@@ -159,10 +142,10 @@ def main():
     test_heads = get_w2v_idx(test_dataset['Headline'], w2v, 20)
     # test_seq = WordVecSequence(w2v, test_heads, test_arts, test_Y, batch_size=BATCH_SIZE)
     test_seq = WordVecSequence(w2v, test_heads, test_arts, batch_size=BATCH_SIZE)
-    
+
     print('Evaluating model with {} entries ({} batches)'.format(len(test_dataset), len(test_dataset) // BATCH_SIZE))
     # print(model.evaluate_generator(test_seq, len(test_dataset) // BATCH_SIZE, use_multiprocessing=False, workers=8))
-    preds = model.predict_generator(test_seq, round(len(test_dataset) / BATCH_SIZE), 
+    preds = model.predict_generator(test_seq, round(len(test_dataset) / BATCH_SIZE),
                                     use_multiprocessing=False, workers=8, verbose=1)
     preds = preds.argmax(axis=1)
     # print(preds.argmax(axis=1).shape)

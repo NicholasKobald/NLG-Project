@@ -6,6 +6,7 @@ import string
 from csv import DictReader
 
 import numpy as np
+import pandas as pd
 
 import nltk
 from nltk.corpus import stopwords
@@ -16,7 +17,6 @@ from sklearn.feature_extraction.text import CountVectorizer
 from gensim.models import KeyedVectors
 
 
-
 STOP_WORDS = set(stopwords.words('english'))
 _wnl = nltk.WordNetLemmatizer()
 
@@ -25,7 +25,7 @@ class DataSet():
     def __init__(self,
                  bodies_fname="train_bodies.csv",
                  stance_fname="train_stances.csv",
-                 path="../data_sets"
+                 path="/data_sets"
                 ):
 
         self.path = path
@@ -147,3 +147,22 @@ def load_word2vec(fname, bin_fname):
     google_vec = w2v.wv
     del w2v
     return google_vec
+
+def create_dataset(name='train'):
+    all_data = pd.read_csv('data_sets/' + name + '_stances.csv')
+    to_join = pd.read_csv('data_sets/' + name + '_bodies.csv')
+    return pd.merge(all_data, to_join)
+
+
+def even_classes(data, sample='min_class'):
+    sample_n = sample
+
+    groups = data.groupby('Stance')
+    counts = groups.size()
+    if sample == 'min_class':
+        sample_n = min(counts)
+    elif sample == 'max_class':
+        sample_n = max(counts)
+
+    sampled = map(lambda g: g[1].sample(sample_n, replace=True), groups)
+    return pd.concat(sampled).reset_index(drop=True)
