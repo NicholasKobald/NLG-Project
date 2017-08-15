@@ -46,11 +46,11 @@ def create_model(train_set, w2v, max_words=100):
     # Train vocab and generate BOW representation
     train_arts = gen_or_load_feats(
         lambda: get_w2v_idx(articles, w2v, 200),
-        '../features/w2v_articles{0}.npy'.format(200)
+        'features/w2v_articles{0}.npy'.format(200)
     )
     train_heads = gen_or_load_feats(
         lambda: get_w2v_idx(headlines, w2v, 20),
-        '../features/w2v_headlines{0}.npy'.format(20)
+        'features/w2v_headlines{0}.npy'.format(20)
     )
 
     print('Initialize layers')
