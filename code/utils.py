@@ -1,8 +1,11 @@
 #The code based on baseline provided by the FNC organization,
 #under the the Apache License
 #https://github.com/FakeNewsChallenge/fnc-1-baseline
+import os
 import string
 from csv import DictReader
+
+import numpy as np
 
 import nltk
 from nltk.corpus import stopwords
@@ -10,8 +13,12 @@ from nltk.corpus import stopwords
 from sklearn import feature_extraction
 from sklearn.feature_extraction.text import CountVectorizer
 
-STOP_WORDS = set(stopwords.words('english'))
+from gensim.models import KeyedVectors
 
+
+
+STOP_WORDS = set(stopwords.words('english'))
+_wnl = nltk.WordNetLemmatizer()
 
 class DataSet():
 
@@ -83,8 +90,9 @@ class DataSet():
             self.triples['headlines'].append(s['Headline'])
 
 
+
+
 def normalize_word(w):
-    _wnl = nltk.WordNetLemmatizer()
     return _wnl.lemmatize(w).lower()
 
 
@@ -95,13 +103,47 @@ def get_all_stopwords():
     return all_stop_words
 
 
-def get_tokenized_lemmas_without_stopwords(s):
-    all_stop_words = get_all_stopwords()
+def get_tokenized_lemmas_without_stopwords(s, stop_words=get_all_stopwords()):
     return [normalize_word(t) for t in nltk.word_tokenize(s)
-            if t not in string.punctuation and t.lower() not in all_stop_words]
+            if t not in string.punctuation
+            and t.lower() not in stop_words]
 
 
 def generate_vocab(dataset, size=5000, stop_words=None):
     cv = CountVectorizer(max_features=size, tokenizer=get_tokenized_lemmas_without_stopwords)
     cv.fit(dataset['Headline'] + dataset['articleBody'])
     return cv.vocabulary_
+
+
+def transform_text(t, vocab, max_len):
+    tokens = get_tokenized_lemmas_without_stopwords(t)
+    unk_token = vocab['unk']
+    res = np.full(max_len, unk_token.index)
+
+    for i in range(min(max_len, len(tokens))):
+        res[i] = vocab.get(tokens[i], vocab['unk']).index
+
+    return res
+
+
+def gen_or_load_feats(generator, feature_file):
+    if not os.path.isfile(feature_file):
+        feats = generator()
+        np.save(feature_file, feats)
+
+    return np.load(feature_file)
+
+
+def load_word2vec(fname, bin_fname):
+    # We need to generate the memmap-able format from the original binary
+    # if it isn't already available
+    if not os.path.isfile(fname):
+        print('Processed word2vec data not found, generating from binary...')
+        google_vec = KeyedVectors.load_word2vec_format(bin_fname, binary=True)
+        google_vec.save(fname)
+        del google_vec
+
+    w2v = KeyedVectors.load(fname, mmap='r')
+    google_vec = w2v.wv
+    del w2v
+    return google_vec
